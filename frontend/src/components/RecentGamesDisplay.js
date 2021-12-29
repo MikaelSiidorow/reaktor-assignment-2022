@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import SingleGame from './SingleGame'
+import ActiveGame from './ActiveGame'
 
 const RecentGamesDisplay = () => {
 
@@ -9,8 +9,16 @@ const RecentGamesDisplay = () => {
     <div className="recent">
       <table>
         <tbody>
+          <tr>
+            <th>Date</th>
+            <th>Player A</th>
+            <th>played</th>
+            <th>vs</th>
+            <th>played</th>
+            <th>Player B</th>
+          </tr>
           {history.slice(0, 15).map(game =>
-            <SingleGame key={game.gameId} game={game} />
+            <ActiveGame key={game.gameId} game={game} />
           )}
         </tbody>
       </table>

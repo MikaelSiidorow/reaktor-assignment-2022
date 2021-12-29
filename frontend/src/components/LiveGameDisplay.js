@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import SingleGame from './SingleGame'
+import ActiveGame from './ActiveGame'
 
 const LiveGameDisplay = () => {
 
@@ -16,8 +16,16 @@ const LiveGameDisplay = () => {
     <div className="live">
       <table>
         <tbody>
+          <tr>
+            <th>Date</th>
+            <th>Player A</th>
+            <th>played</th>
+            <th>vs</th>
+            <th>played</th>
+            <th>Player B</th>
+          </tr>
           {liveGames.map(game =>
-            <SingleGame key={game.gameId} game={game} />
+            <ActiveGame key={game.gameId} game={game} />
           )}
         </tbody>
       </table>
