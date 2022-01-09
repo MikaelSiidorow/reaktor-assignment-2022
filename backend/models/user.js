@@ -2,6 +2,14 @@ const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
   _id: String,
+  totalGames: Number,
+  totalWins: Number,
+  mostPlayed: String,
+  handCounts: {
+    ROCK: Number,
+    PAPER: Number,
+    SCISSORS: Number,
+  },
   games: [
     {
       type: mongoose.Schema.Types.String,

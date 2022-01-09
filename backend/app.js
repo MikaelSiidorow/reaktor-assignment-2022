@@ -8,7 +8,7 @@ const gamesRouter = require('./controllers/games')
 const usersRouter = require('./controllers/users')
 const mongoose = require('mongoose')
 
-const { getAll } = require('./utils/history')
+const { getAll, updateUserData } = require('./utils/history')
 
 const app = express()
 
@@ -16,8 +16,9 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
   .then(() => {
     logger.info('connected to MongoDB')
 
-    logger.info('fetching data from external api')
-    getAll()
+    //logger.info('fetching data from external api')
+    //getAll()
+    //updateUserData()
   })
   .catch((error) => {
     logger.error('error connection to MongoDB:', error.message)
