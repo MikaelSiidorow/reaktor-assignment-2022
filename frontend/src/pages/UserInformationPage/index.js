@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import userService from "../services/users"
+import userService from "../../services/users"
 import UserMatchHistory from "./UserMatchHistory"
 
 const UserDisplay = () => {

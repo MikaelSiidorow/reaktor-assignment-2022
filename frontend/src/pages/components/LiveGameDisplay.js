@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import ActiveGame from './ActiveGame'
+import ActiveGame from '../RecentGamesPage/ActiveGame'
 
 const LiveGameDisplay = () => {
 

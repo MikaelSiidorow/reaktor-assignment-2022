@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import userService from "../services/users"
+import userService from "../../services/users"
 import FinishedGame from './FinishedGame'
 
 const UserMatchHistory = ({ id }) => {
@@ -13,7 +13,6 @@ const UserMatchHistory = ({ id }) => {
       setGames(data.games)
     })
     userService.getGames(id, page + 1).then(data => {
-      console.log(data)
       setNextGames(data.games)
     })
     } else {
@@ -47,8 +46,6 @@ const UserMatchHistory = ({ id }) => {
               <th>played</th>
               <th>Player B</th>
             </tr>
-            {console.log(games)}
-            {console.log('next', nextGames)}
             {games.map(game =>
               <FinishedGame key={game.gameId} game={game}/> 
             )}

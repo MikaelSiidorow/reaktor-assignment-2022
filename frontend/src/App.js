@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 
-import LiveGameDisplay from './components/LiveGameDisplay'
-import RecentGamesDisplay from './components/RecentGamesDisplay'
-import UsersList from './components/UsersList'
-import UserDisplay from './components/UserDisplay'
+import LiveGameDisplay from './pages/components/LiveGameDisplay'
+import RecentGamesDisplay from './pages/RecentGamesPage'
+import UsersList from './pages/UserListPage'
+import UserDisplay from './pages/UserInformationPage'
 
 import {
   BrowserRouter as Router,
