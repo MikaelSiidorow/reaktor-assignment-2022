@@ -33,7 +33,7 @@ usersRouter.get('/:id/games', async (request, response) => {
     })
   } else if (page < pages) {
     const games = (await User
-      .findById(request.params.id, { games: { $slice: [(page - 1) * 20 + firstPageCount, page * 20 + firstPageCount] } })
+      .findById(request.params.id, { games: { $slice: [(page - 1) * 20 + firstPageCount, 20] } })
       .populate('games')).games
 
     response.json({
@@ -43,7 +43,7 @@ usersRouter.get('/:id/games', async (request, response) => {
   }
   else if (page === pages) {
     const games = (await User
-      .findById(request.params.id, { games: { $slice: [(page - 1) * 20 + firstPageCount, page * 20 + firstPageCount] } })
+      .findById(request.params.id, { games: { $slice: [(page - 1) * 20 + firstPageCount, 20] } })
       .populate('games')).games
 
     response.json({
