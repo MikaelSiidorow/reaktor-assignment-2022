@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Table } from "react-bootstrap"
 import { useParams } from "react-router-dom"
 import userService from "../../services/users"
 import UserMatchHistory from "./UserMatchHistory"
@@ -26,7 +27,7 @@ const UserDisplay = () => {
       <h2>{userId}</h2>
       <div className='aggregate'>
         <h2>Stats</h2>
-        <table>
+        <Table bordered>
           <tbody>
             <tr>
               <th>Win Ratio</th>
@@ -39,7 +40,7 @@ const UserDisplay = () => {
               <td>{user.mostPlayed} <i>{(user.handCounts[user.mostPlayed]/user.totalGames * 100).toFixed(2)}%</i></td>
             </tr>
           </tbody>
-        </table>
+          </Table>
       </div>
 
       <UserMatchHistory id={userId} />

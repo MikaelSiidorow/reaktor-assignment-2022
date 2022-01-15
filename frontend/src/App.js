@@ -5,26 +5,30 @@ import RecentGamesDisplay from './pages/RecentGamesPage'
 import UsersList from './pages/UserListPage'
 import UserDisplay from './pages/UserInformationPage'
 
+import Container from 'react-bootstrap/Container'
+
 import {
   BrowserRouter as Router,
-  Switch, Route, Link
+  Switch, Route
 } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { initializeUsers } from './reducers/userReducer'
+import AppNavBar from './pages/components/AppNavBar'
+import { initializeGames } from './reducers/historyReducer'
 
 const App = () => {
-  
+
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initializeUsers())
+    dispatch(initializeGames())
   })
 
   return (
-    <div className="container">
+    <Container>
       <Router>
-        <h1><Link to='/'>RPS App</Link><Link to='/users'>Users</Link></h1>
-        <hr />
+        <AppNavBar />
         <h2>In progress</h2>
         <LiveGameDisplay />
 
@@ -43,7 +47,7 @@ const App = () => {
         </Switch>
 
       </Router>
-    </div>
+    </Container>
   )
 }
 

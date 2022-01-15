@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
+import { Pagination } from "react-bootstrap"
 import userService from "../../services/users"
-import FinishedGame from './FinishedGame'
+import Game from '../components/Game'
 
 const UserMatchHistory = ({ id }) => {
   const [games, setGames] = useState([])
@@ -9,19 +10,19 @@ const UserMatchHistory = ({ id }) => {
 
   useEffect(() => {
     if (!page) {
-    userService.getGames(id, page).then(data => {
-      setGames(data.games)
-    })
-    userService.getGames(id, page + 1).then(data => {
-      setNextGames(data.games)
-    })
+      userService.getGames(id, page).then(data => {
+        setGames(data.games)
+      })
+      userService.getGames(id, page + 1).then(data => {
+        setNextGames(data.games)
+      })
     } else {
       setGames(nextGames)
       userService.getGames(id, page + 1).then(data => {
         setNextGames(data.games)
       })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, id])
 
   if (!games || games.length === 0) {
@@ -35,28 +36,17 @@ const UserMatchHistory = ({ id }) => {
 
   return (
     <div className='matchHistory'>
-        <h2>Match History</h2>
-        <table>
-          <tbody>
-            <tr>
-              <th>Date</th>
-              <th>Player A</th>
-              <th>played</th>
-              <th>vs</th>
-              <th>played</th>
-              <th>Player B</th>
-            </tr>
-            {games.map(game =>
-              <FinishedGame key={game.gameId} game={game}/> 
-            )}
-          </tbody>
-        </table>
-        <div>
-          <button onClick={() => setPage(page - 1)}>Previous</button>
-          Page: {page + 1}
-          <button onClick={() => setPage(page + 1)}>Next</button>
-        </div>
-      </div>
+      <h2>Match History</h2>
+
+      {games.map(game =>
+        <Game key={game.gameId} game={game} />
+      )}
+      <Pagination>
+        {page !== 0 ? <Pagination.Prev onClick={() => setPage(page - 1)}/> : null}
+        <Pagination.Item active>{page + 1}</Pagination.Item>
+        <Pagination.Next onClick={() => setPage(page + 1)}/>
+      </Pagination>
+    </div>
   )
 }
 
