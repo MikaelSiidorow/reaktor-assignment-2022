@@ -12,9 +12,15 @@ const getUser = (user) => {
   return request.then(response => response.data)
 }
 
+const getGames = (user, page) => {
+  const request = axios.get(`${baseUrl}/${user}/games/?page=${page}`)
+  return request.then(response => response.data)
+}
+
 const userService = {
   getAll,
-  getUser
+  getUser,
+  getGames
 }
 
 export default userService
