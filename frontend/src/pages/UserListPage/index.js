@@ -9,10 +9,13 @@ const UsersList = () => {
     <div className='userList'>
       <ListGroup>
         {users.map(user =>
-          <ListGroup.Item key={user.name}>
-            <Link to={`/users/${user.name}`}>
-              {user.name}
-            </Link>
+          <ListGroup.Item
+            key={user.name}
+            action
+            as={Link}
+            to={`/users/${user.name}`}
+          >
+            {user.name}
           </ListGroup.Item>
         )}
       </ListGroup>

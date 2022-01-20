@@ -3,6 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import PlayedIcon from './PlayedIcon'
 import { dateParser } from '../../utils'
+import { FaCrown } from 'react-icons/fa'
 
 const Game = ({ game }) => {
   return (
@@ -20,6 +21,7 @@ const Game = ({ game }) => {
             <Link to={`/users/${game.playerA.name}`}>
               {game.playerA.name}
             </Link>
+            {game.winner === game.playerA.name ? <FaCrown color='gold' fontSize='2em'/> : null}
         </Col>
         {game.playerA.played ?
           <Col xs className='text-end'>
@@ -37,6 +39,7 @@ const Game = ({ game }) => {
           : null
         }
         <Col xs className='text-end'>
+          {game.winner === game.playerB.name ? <FaCrown color='gold' fontSize='2em'/> : null}
           <Link to={`/users/${game.playerB.name}`}>
             {game.playerB.name}
           </Link>

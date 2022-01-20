@@ -5,6 +5,7 @@ import UserMatchHistory from "./UserMatchHistory"
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserData } from '../../reducers/userReducer'
 import _ from 'lodash'
+import PlayedIcon from "../components/PlayedIcon"
 
 const UserDisplay = () => {
   const name = useParams().user
@@ -37,17 +38,20 @@ const UserDisplay = () => {
       <h2>{name}</h2>
       <div className='aggregate'>
         <h2>Stats</h2>
-        <Table bordered>
+        <Table striped bordered style={{textAlign:'center'}}>
           <tbody>
             <tr>
-              <th>Win Ratio</th>
-              <th>Matches Played</th>
-              <th>Most Played Hand</th>
+              <th style={{width:'2rem'}}>Win Ratio</th>
+              <th style={{width:'2rem'}}>Matches Played</th>
+              <th style={{width:'2rem'}}>Most Played Hand</th>
             </tr>
             <tr>
               <td>{(user.totalWins/user.totalGames*100).toFixed(2)}%</td>
               <td>{user.totalGames}</td>
-              <td>{mostPlayed} <i>{(user.handCounts[mostPlayed]/user.totalGames * 100).toFixed(2)}%</i></td>
+              <td>
+                <PlayedIcon played={mostPlayed}/>
+                ({(user.handCounts[mostPlayed]/user.totalGames * 100).toFixed(2)}%)
+                </td>
             </tr>
           </tbody>
           </Table>
