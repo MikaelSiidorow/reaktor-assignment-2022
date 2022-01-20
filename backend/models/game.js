@@ -2,21 +2,16 @@ const mongoose = require('mongoose')
 
 const gameSchema = mongoose.Schema({
   _id: String,
-  date: Date,
+  t: Number,
   playerA: {
-    player: {
-      type: mongoose.Schema.Types.String,
-      ref: 'User'
-    },
+    name: String,
     played: String
   },
   playerB: {
-    player: {
-      type: mongoose.Schema.Types.String,
-      ref: 'User'
-    },
+    name: String,
     played: String
-  }
+  },
+  winner: String,
 })
 
 gameSchema.set('toJSON', {

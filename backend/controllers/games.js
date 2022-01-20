@@ -13,4 +13,10 @@ gamesRouter.get('/:time', async (request, response) => {
   response.json(games)
 })
 
+gamesRouter.get('/', async (request, response) => {
+  const games = await Game.find({}).limit(20)
+
+  response.json(games)
+})
+
 module.exports = gamesRouter

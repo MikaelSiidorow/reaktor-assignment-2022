@@ -16,9 +16,8 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
   .then(() => {
     logger.info('connected to MongoDB')
 
-    //logger.info('fetching data from external api')
-    //getAll()
-    //updateUserData()
+    logger.info('fetching data from external api')
+    getAll()
   })
   .catch((error) => {
     logger.error('error connection to MongoDB:', error.message)

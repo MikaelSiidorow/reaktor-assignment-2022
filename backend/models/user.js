@@ -4,7 +4,6 @@ const userSchema = mongoose.Schema({
   _id: String,
   totalGames: Number,
   totalWins: Number,
-  mostPlayed: String,
   handCounts: {
     ROCK: Number,
     PAPER: Number,
@@ -20,7 +19,7 @@ const userSchema = mongoose.Schema({
 
 userSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.userId = returnedObject._id
+    returnedObject.name = returnedObject._id
     delete returnedObject._id
     delete returnedObject.__v
   }

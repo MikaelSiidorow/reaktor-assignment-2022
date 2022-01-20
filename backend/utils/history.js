@@ -1,64 +1,196 @@
 const axios = require('axios')
+const logger = require('./logger')
+const { determineWinner } = require('./utils')
 const User = require('../models/user')
 const Game = require('../models/game')
-const logger = require('./logger')
-const { totalWins, mostPlayed, handCounts } = require('./utils')
+const Cursor = require('../models/cursor')
 
 const baseUrl = 'https://bad-api-assignment.reaktor.com'
 
-const saveToDb = async (data) => {
+const sortGames = async () => {
   try {
-    const game = new Game({
-      _id: data.gameId,
-      date: new Date(data.t),
-      playerA: {
-        player: data.playerA.name,
-        played: data.playerA.played
-      },
-      playerB: {
-        player: data.playerB.name,
-        played: data.playerB.played
-      }
-    })
-    await Promise.all([
-      User.findByIdAndUpdate(
-        { _id: data.playerA.name },
-        {
-          $addToSet: {
-            games: data.gameId
-          }
-        },
-        { new: true, upsert: true }),
-      User.findByIdAndUpdate(
-        { _id: data.playerB.name },
-        {
-          $addToSet: {
-            games: data.gameId
-          }
-        },
-        { new: true, upsert: true }),
-      game.save()
-    ])
-  } catch (error) {
-    if (error.name == 'MongoServerError' && error.message.includes('duplicate key error')) {
-      //logger.info('already saved')
+    //sort games collection by time
+
+    await Game
+      .find({})
+      .sort({ "t": 1 })
+
+    //get all userIds
+    const userIds = await User.find({}, { _id: 1 })
+
+    //sort all games for each user
+    for (const userId of userIds) {
+      User
+        .findById(userId)
+        .populate('games')
+        .exec(async (err, docs) => {
+          docs.games.sort((a, b) => {
+            let c = 0
+            if (a.t > b.t) {
+              c = -1
+            } else if (a.t < b.t) {
+              c = 1
+            }
+            return c
+          })
+          await docs.save()
+        })
     }
-    else {
-      logger.error(error)
-    }
+  } catch (err) {
+    logger.error(err)
   }
 }
 
-///rps/history?cursor=0PZ6xsyxvdxh
+const saveData = async (data) => {
+  //all logic breaks if there's an issue in between saving game and users but not like that would ever happen...
+  try {
+    if (await Game.findById(data.gameId)) {
+      console.log('already saved')
+    }
+    else {
+      //console.log(data)
+      const game = new Game({
+        _id: data.gameId,
+        ...data,
+        winner: determineWinner(data),
+      })
+      await game.save()
+      //console.log('game', game)
+      const getA = await User.findById(game.playerA.name)
+      const getB = await User.findById(game.playerB.name)
+      //console.log('getA before', getA, 'getB before', getB)
+      if (getA && getB && getA._id === getB._id) {
+        //rare case where player plays against themselves
+        //only update player once
+        getA.totalGames = getA.totalGames + 1
+        getA.totalWins = game.winner === game.playerA.name ? getA.totalWins + 1 : getA.totalWins
+        getA.handCounts = {
+          ROCK: game.playerA.played === 'ROCK' ? getA.handCounts.ROCK + 1 : getA.handCounts.ROCK,
+          PAPER: game.playerA.played === 'PAPER' ? getA.handCounts.PAPER + 1 : getA.handCounts.PAPER,
+          SCISSORS: game.playerA.played === 'SCISSORS' ? getA.handCounts.SCISSORS + 1 : getA.handCounts.SCISSORS
+        }
+        getA.games = [
+          game._id, ...getA.games
+        ]
+        //update user data
+        //console.log('getA after', getA)
+        await getA.save()
+      } else if (game.playerA.name === game.playerB.name) {
+        // first time seeing this user
+        const a = new User({
+          _id: game.playerA.name,
+          totalGames: 1,
+          totalWins: game.winner === game.playerA.name ? 1 : 0,
+          handCounts: {
+            ROCK: game.playerA.played === 'ROCK' ? 1 : 0,
+            PAPER: game.playerA.played === 'PAPER' ? 1 : 0,
+            SCISSORS: game.playerA.played === 'SCISSORS' ? 1 : 0
+          },
+          games: [
+            game._id
+          ]
+        })
+        //save user
+        //console.log('a', a)
+        await a.save()
+      } else {
+        if (getA) {
+          //user found in db
+          getA.totalGames = getA.totalGames + 1
+          getA.totalWins = game.winner === game.playerA.name ? getA.totalWins + 1 : getA.totalWins
+          getA.handCounts = {
+            ROCK: game.playerA.played === 'ROCK' ? getA.handCounts.ROCK + 1 : getA.handCounts.ROCK,
+            PAPER: game.playerA.played === 'PAPER' ? getA.handCounts.PAPER + 1 : getA.handCounts.PAPER,
+            SCISSORS: game.playerA.played === 'SCISSORS' ? getA.handCounts.SCISSORS + 1 : getA.handCounts.SCISSORS
+          }
+          getA.games = [
+            game._id, ...getA.games
+          ]
+          //update user data
+          //console.log('getA after', getA)
+          await getA.save()
+        } else {
+          // first time seeing this user
+          const a = new User({
+            _id: game.playerA.name,
+            totalGames: 1,
+            totalWins: game.winner === game.playerA.name ? 1 : 0,
+            handCounts: {
+              ROCK: game.playerA.played === 'ROCK' ? 1 : 0,
+              PAPER: game.playerA.played === 'PAPER' ? 1 : 0,
+              SCISSORS: game.playerA.played === 'SCISSORS' ? 1 : 0
+            },
+            games: [
+              game._id
+            ]
+          })
+          //save user
+          //console.log('a', a)
+          await a.save()
+        }
+        if (getB) {
+          //user found in db
+          getB.totalGames = getB.totalGames + 1
+          getB.totalWins = game.winner === game.playerB.name ? getB.totalWins + 1 : getB.totalWins
+          getB.handCounts = {
+            ROCK: game.playerB.played === 'ROCK' ? getB.handCounts.ROCK + 1 : getB.handCounts.ROCK,
+            PAPER: game.playerB.played === 'PAPER' ? getB.handCounts.PAPER + 1 : getB.handCounts.PAPER,
+            SCISSORS: game.playerB.played === 'SCISSORS' ? getB.handCounts.SCISSORS + 1 : getB.handCounts.SCISSORS
+          }
+          getB.games = [
+            game._id, ...getB.games
+          ]
+          //update user data
+          //console.log('getB after', getB)
+          await getB.save()
+        } else {
+          // first time seeing this user
+          const b = new User({
+            _id: game.playerB.name,
+            totalGames: 1,
+            totalWins: game.winner === game.playerB.name ? 1 : 0,
+            handCounts: {
+              ROCK: game.playerB.played === 'ROCK' ? 1 : 0,
+              PAPER: game.playerB.played === 'PAPER' ? 1 : 0,
+              SCISSORS: game.playerB.played === 'SCISSORS' ? 1 : 0
+            },
+            games: [
+              game._id
+            ]
+          })
+          //save user
+          //console.log('b', b)
+          await b.save()
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error:', err, 'With input data:', data)
+  }
+}
+
 const getAll = async (cursor = '/rps/history') => {
   try {
     logger.info('getting url:', baseUrl + cursor)
     const response = await axios.get(baseUrl + cursor)
     if (response.data.data.cursor === null || response.data.data.length < 1) {
-      logger.info('done fetching data from external api')
+      logger.info('reached the end of the api, sorting games by time and restarting')
+      await sortGames()
+      getAll()
     }
-    for (const game of response.data.data) {
-      await saveToDb(game)
+    if (cursor === '/rps/history') {
+      for (const game of response.data.data) {
+        await saveData(game)
+      }
+    }
+    else if (cursor !== '/rps/history' && !(await Cursor.findById(cursor))) {
+      cursorToSave = new Cursor({ _id: cursor })
+      for (const game of response.data.data) {
+        await saveData(game)
+      }
+      await cursorToSave.save()
+    } else {
+      console.log('already fetched page data: skipping...')
     }
     getAll(response.data.cursor)
   } catch (error) {
@@ -66,65 +198,4 @@ const getAll = async (cursor = '/rps/history') => {
   }
 }
 
-const updateUser = async (userId) => {
-  try {
-    const userFromDb = await User
-      .findById(userId)
-      .populate('games')
-    const userNoGames = await User
-      .findById(userId)
-
-    userNoGames.totalGames = userFromDb.toJSON().games.length
-    userNoGames.totalWins = totalWins(userFromDb.toJSON())
-    userNoGames.mostPlayed = mostPlayed(userFromDb.toJSON())
-    userNoGames.handCounts = handCounts(userFromDb.toJSON())
-
-    console.log(await userNoGames.save())
-  } catch (error) {
-    logger.error(error)
-  }
-}
-
-const sortGames = async (userId) => {
-  try {
-    User
-      .findById(userId)
-      .populate('games')
-      .exec( async (err, docs) => {
-        docs.games.sort((a, b) => {
-          let c = 0
-          if (a.date > b.date) {
-            c = -1
-          } else if (a.date < b.date) {
-            c = 1
-          }
-          return c
-        })
-        await docs.save()
-      })
-  } catch (error) {
-    logger.error(error)
-  }
-}
-
-const updateUserData = async () => {
-  try {
-    /*
-    const users = await User.find({})
-    console.log(users.map( user => ({
-      ...user.toJSON(),
-      games: undefined
-    })))
-    */
-
-    usersByName = await User.find({}).distinct('_id')
-    for (const user of usersByName) {
-      sortGames(user)
-
-    }
-  } catch (error) {
-    logger.error(error)
-  }
-}
-
-module.exports = { getAll, updateUserData }
+module.exports = { getAll }

@@ -12,7 +12,8 @@ const historyReducer = (state = [], action) => {
 
 export const initializeGames = () => {
   return async dispatch => {
-    const games = await gameService.getRecent(Math.floor(Date.now()/1000))
+    //time Math.floor(Date.now()/1000)
+    const games = await gameService.getRecent()
     dispatch({
       type: 'INIT_HISTORY',
       data: games

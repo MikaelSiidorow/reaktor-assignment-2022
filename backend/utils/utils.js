@@ -14,49 +14,25 @@ const mostPlayed = (user) => {
   return mostPlayedArray[0]
 }
 
-const handCounts = (user) => {
-  const handCounts = _
-  .chain(user.games)
-  .map(game =>
-    game.playerA.player === user.userId ? game.playerA.played : game.playerB.played)
-  .countBy()
-  .value()
-
-  return handCounts
-}
-
-const winner = (a, b) => {
-  if (a.played === b.played) {
-    return null
+const determineWinner = ({ playerA, playerB }) => {
+  if (playerA.played === playerB.played) {
+    return undefined
   }
-  else if (a.played === 'PAPER' && b.played === 'ROCK') {
-    return a
+  else if (playerA.played === 'PAPER' && playerB.played === 'ROCK') {
+    return playerA.name
   }
-  else if (a.played === 'ROCK' && b.played === 'SCISSORS') {
-    return a
+  else if (playerA.played === 'ROCK' && playerB.played === 'SCISSORS') {
+    return playerA.name
   }
-  else if (a.played === 'SCISSORS' && b.played === 'PAPER') {
-    return a
+  else if (playerA.played === 'SCISSORS' && playerB.played === 'PAPER') {
+    return playerA.name
   }
   else {
-    return null
+    return playerB.name
   }
 }
 
-const totalWins = (user) =>
-  _
-    .chain(user.games)
-    .map(game => ({
-      'a': game.playerA.player === user.userId ? game.playerA : game.playerB,
-      'b': game.playerB.player === user.userId ? game.playerA : game.playerB
-    }))
-    .map(game => winner(game.a, game.b))
-    .compact()
-    .size()
-    .value()
-
 module.exports = {
-  totalWins,
   mostPlayed,
-  handCounts
+  determineWinner
 }
