@@ -1,3 +1,4 @@
+import { ListGroup } from "react-bootstrap"
 import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom'
 
@@ -6,13 +7,15 @@ const UsersList = () => {
 
   return (
     <div className='userList'>
-      {users.map(user =>
-        <div key={user.userId}>
-          <Link to={`/users/${user.userId}`}>
-            {user.userId}
-          </Link>
-        </div>
-      )}
+      <ListGroup>
+        {users.map(user =>
+          <ListGroup.Item key={user.name}>
+            <Link to={`/users/${user.name}`}>
+              {user.name}
+            </Link>
+          </ListGroup.Item>
+        )}
+      </ListGroup>
     </div>
   )
 

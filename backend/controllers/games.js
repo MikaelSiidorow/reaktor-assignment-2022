@@ -9,7 +9,7 @@ gamesRouter.get('/:time', async (request, response) => {
   
   const t = parseInt(request.params.time) * 1000
   const games = await Game
-    .find({ t: { $gte: t-100000 } })
+    .find({ t: { $gte: t-600000 } })
 
   response.json(games)
 })

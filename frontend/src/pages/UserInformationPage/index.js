@@ -1,30 +1,40 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Table } from "react-bootstrap"
 import { useParams } from "react-router-dom"
-import userService from "../../services/users"
 import UserMatchHistory from "./UserMatchHistory"
+import { useDispatch, useSelector } from 'react-redux'
+import { updateUserData } from '../../reducers/userReducer'
+import _ from 'lodash'
 
 const UserDisplay = () => {
-  const [user, setUser] = useState(null)
-  const userId = useParams().user
+  const name = useParams().user
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    userService.getUser(userId).then(user =>
-      setUser(user))
-  }, [userId])
+    dispatch(updateUserData(name))
+  }, [name, dispatch])
 
-  if (!user) {
+  const user = useSelector(state => state.users).find(u => u.name === name)
+
+  if (!user || !user.totalGames) {
     return (
       <div className='user'>
-        <h2>{userId}</h2>
+        <h2>{name}</h2>
         <p>Loading...</p>
       </div>
     )
   }
 
+  const mostPlayed = _
+    .chain(user.handCounts)
+    .toPairs()
+    .maxBy(_.last())
+    .first()
+    .value()
+
   return (
     <div className='user'>
-      <h2>{userId}</h2>
+      <h2>{name}</h2>
       <div className='aggregate'>
         <h2>Stats</h2>
         <Table bordered>
@@ -37,13 +47,13 @@ const UserDisplay = () => {
             <tr>
               <td>{(user.totalWins/user.totalGames*100).toFixed(2)}%</td>
               <td>{user.totalGames}</td>
-              <td>{user.mostPlayed} <i>{(user.handCounts[user.mostPlayed]/user.totalGames * 100).toFixed(2)}%</i></td>
+              <td>{mostPlayed} <i>{(user.handCounts[mostPlayed]/user.totalGames * 100).toFixed(2)}%</i></td>
             </tr>
           </tbody>
           </Table>
       </div>
 
-      <UserMatchHistory id={userId} />
+      <UserMatchHistory id={name} />
     </div>
   )
 

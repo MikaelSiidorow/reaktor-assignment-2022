@@ -5,9 +5,6 @@ import PlayedIcon from './PlayedIcon'
 import { dateParser } from '../../utils'
 
 const Game = ({ game }) => {
-  const aName = game.playerA.name ? game.playerA.name : game.playerA.player
-  const bName = game.playerB.name ? game.playerB.name : game.playerB.player
-
   return (
     <Container>
       {game.t ?
@@ -20,8 +17,8 @@ const Game = ({ game }) => {
       }
       <Row className='justify-content-between'>
         <Col xs className='text-left'>
-            <Link to={`/users/${aName}`}>
-              {aName}
+            <Link to={`/users/${game.playerA.name}`}>
+              {game.playerA.name}
             </Link>
         </Col>
         {game.playerA.played ?
@@ -40,8 +37,8 @@ const Game = ({ game }) => {
           : null
         }
         <Col xs className='text-end'>
-          <Link to={`/users/${bName}`}>
-            {bName}
+          <Link to={`/users/${game.playerB.name}`}>
+            {game.playerB.name}
           </Link>
         </Col>
       </Row>
