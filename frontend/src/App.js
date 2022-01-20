@@ -13,7 +13,7 @@ import {
 } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { initializeUsers } from './reducers/userReducer'
-import AppNavBar from './pages/components/AppNavBar'
+import Header from './pages/components/Header'
 import { initializeGames } from './reducers/historyReducer'
 
 const App = () => {
@@ -28,7 +28,7 @@ const App = () => {
   return (
     <Container>
       <Router>
-        <AppNavBar />
+        <Header />
         <h2>In progress</h2>
         <LiveGameDisplay />
 

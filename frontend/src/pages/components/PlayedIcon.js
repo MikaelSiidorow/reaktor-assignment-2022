@@ -1,15 +1,16 @@
 import React from 'react'
-import { Scissors, Octagon, Square, QuestionCircle } from 'react-bootstrap-icons'
+import { QuestionCircle } from 'react-bootstrap-icons'
+import { GiRock, GiPaper, GiScissors } from 'react-icons/gi'
 
-const PlayedIcon = ({ played }) => {
-
+const PlayedIcon = ({ played, rotated }) => {
+  console.log(rotated)
   switch (played) {
     case 'ROCK':
-      return <Octagon />
+      return <GiRock fontSize='2rem' style={{ transform: rotated ? 'rotateY(180deg)' : 'none'}}/>
     case 'PAPER':
-      return <Square />
+      return <GiPaper fontSize='2rem' style={{ transform: rotated ? 'rotateY(180deg)' : 'none'}}/>
     case 'SCISSORS':
-      return <Scissors />
+      return <GiScissors fontSize='2rem' style={{ transform: rotated ? 'rotateY(180deg)' : 'none'}}/>
     default:
       return <QuestionCircle />
   }

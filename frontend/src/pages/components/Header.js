@@ -1,13 +1,17 @@
 import React from 'react'
 import { Container, Navbar, Nav } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { FaRegHandRock } from 'react-icons/fa'
 
-const AppNavBar = () => {
+const Header = () => {
   return (
     <>
       <Navbar bg='dark' variant='dark'>
         <Container>
-          <Navbar.Brand as={Link} to='/'>RPS App</Navbar.Brand>
+          <Navbar.Brand as={Link} to='/'>
+            <FaRegHandRock size='3rem' />{' '}
+            RPS App
+          </Navbar.Brand>
           <Nav className='me-auto'>
             <Nav.Link as={Link} to='/users'>Users</Nav.Link>
           </Nav>
@@ -17,4 +21,4 @@ const AppNavBar = () => {
   )
 }
 
-export default AppNavBar
+export default Header

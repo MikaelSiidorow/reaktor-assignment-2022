@@ -34,7 +34,7 @@ const Game = ({ game }) => {
         </Col>
         {game.playerB.played ?
           <Col xs className='text-left'>
-            <PlayedIcon played={game.playerB.played} />
+            <PlayedIcon played={game.playerB.played} rotated={true}/>
           </Col>
           : null
         }
