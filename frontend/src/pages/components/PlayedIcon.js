@@ -1,5 +1,5 @@
 import React from 'react'
-import { QuestionCircle } from 'react-bootstrap-icons'
+import { FaQuestion } from 'react-icons/fa'
 import { GiRock, GiPaper, GiScissors } from 'react-icons/gi'
 
 const PlayedIcon = ({ played, rotated }) => {
@@ -12,7 +12,7 @@ const PlayedIcon = ({ played, rotated }) => {
     case 'SCISSORS':
       return <GiScissors fontSize='2rem' style={{ transform: rotated ? 'rotateY(180deg)' : 'none'}}/>
     default:
-      return <QuestionCircle />
+      return <FaQuestion />
   }
 
 }
