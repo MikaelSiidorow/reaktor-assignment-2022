@@ -53,7 +53,7 @@ const UserDisplay = () => {
           </Table>
       </div>
 
-      <UserMatchHistory id={name} />
+      <UserMatchHistory name={name} />
     </div>
   )
 

@@ -1,51 +1,59 @@
 import React, { useEffect, useState } from "react"
-import { Pagination } from "react-bootstrap"
 import userService from "../../services/users"
 import Game from '../components/Game'
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUserGames } from '../../reducers/userReducer'
+import HistoryPagination from './HistoryPagination'
 
-const UserMatchHistory = ({ id }) => {
-  const [games, setGames] = useState([])
-  const [nextGames, setNextGames] = useState([])
+const UserMatchHistory = ({ name }) => {
+  const games = useSelector(state => state.users).find(u => u.name === name).games
+  const dispatch = useDispatch()
   const [page, setPage] = useState(0)
+  const GAMES_PER_PAGE = 20
 
+  //get all games by the user and add them to the store
   useEffect(() => {
-    if (!page) {
-      userService.getGames(id, page).then(data => {
-        setGames(data.games)
-      })
-      userService.getGames(id, page + 1).then(data => {
-        setNextGames(data.games)
-      })
-    } else {
-      setGames(nextGames)
-      userService.getGames(id, page + 1).then(data => {
-        setNextGames(data.games)
-      })
+    const getGames = async (page = 0) => {
+      try {
+        const response = await userService.getGames(name, page)
+        if (response.games.length > 0) {
+          dispatch(updateUserGames(name, response.games))
+          if (response.nextPage !== null) {
+            getGames(response.nextPage)
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, id])
+    getGames()
+  }, [name, dispatch])
 
   if (!games || games.length === 0) {
     return (
       <div className='matchHistory'>
         <h2>Match History</h2>
         <p>Loading...</p>
+        {console.log(games)}
       </div>
     )
   }
 
+  //page games
+  const pagedGames = Array(Math.ceil(games.length / GAMES_PER_PAGE))
+    .fill()
+    .map((_, index) => index * GAMES_PER_PAGE)
+    .map(begin => games.slice(begin, begin + GAMES_PER_PAGE))
+
+  const PAGE_COUNT = pagedGames.length
+
   return (
     <div className='matchHistory'>
       <h2>Match History</h2>
-
-      {games.map(game =>
+      {pagedGames[page].map(game =>
         <Game key={game.gameId} game={game} />
       )}
-      <Pagination>
-        {page !== 0 ? <Pagination.Prev onClick={() => setPage(page - 1)}/> : null}
-        <Pagination.Item active>{page + 1}</Pagination.Item>
-        <Pagination.Next onClick={() => setPage(page + 1)}/>
-      </Pagination>
+      <HistoryPagination current={page} total={PAGE_COUNT} setPage={setPage}/>
     </div>
   )
 }
