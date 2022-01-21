@@ -34,7 +34,6 @@ const UserMatchHistory = ({ name }) => {
       <div className='matchHistory'>
         <h2>Match History</h2>
         <p>Loading...</p>
-        {console.log(games)}
       </div>
     )
   }
