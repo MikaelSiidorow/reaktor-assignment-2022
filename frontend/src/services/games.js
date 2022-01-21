@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3003/api/games'
+const baseUrl = '/api/games'
 
 const getRecentByTime = (time) => {
   const request = axios.get(`${baseUrl}/${time}`)
