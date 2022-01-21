@@ -11,7 +11,7 @@ const WebSocketProvider = ({ children }) => {
     const dispatch = useDispatch();
 
     if (!socket) {
-        socket = new WebSocket('ws://bad-api-assignment.reaktor.com/rps/live')
+        socket = new WebSocket('wss://bad-api-assignment.reaktor.com/rps/live')
 
         socket.addEventListener('message', (event) => {
           const gameEvent = JSON.parse(JSON.parse(event.data))
