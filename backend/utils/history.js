@@ -107,7 +107,7 @@ const saveData = async (data, index, total) => {
   // all logic breaks (AKA data differs from API) if there's an issue in between saving game and users but not like that would ever happen...
   try {
     if (await Game.findById(data.gameId)) {
-      console.log('already saved', index, 'of', total)
+      logger.info('already saved', index, 'of', total)
     }
     //save game and update users based on the result
     else {
@@ -174,7 +174,7 @@ const getAll = async (cursor = '/rps/history') => {
       // save cursor to db after fully scanning the page
       try {await cursorToSave.save()} catch (err) { logger.error(err) }
     } else {
-      console.log('already fetched page data: skipping...')
+      logger.info('already fetched page data: skipping...')
     }
     // scan next cursor
     getAll(response.data.cursor)
