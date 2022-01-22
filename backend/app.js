@@ -3,7 +3,7 @@ const express = require('express')
 require('express-async-errors')
 const cors = require('cors')
 const logger = require('./utils/logger')
-require('console-stamp')( console, 'HH:MM:ss.l' );
+require('console-stamp')( console, 'HH:MM:ss.l' )
 const middleware = require('./utils/middleware')
 const gamesRouter = require('./controllers/games')
 const usersRouter = require('./controllers/users')

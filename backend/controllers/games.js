@@ -6,7 +6,7 @@ gamesRouter.get('/:time', async (request, response) => {
   if (isNaN(request.params.time)) {
     response.status(400).send({ error: 'invalid date' })
   }
-  
+
   const t = parseInt(request.params.time) * 1000
   const games = await Game
     .find({ t: { $gte: t-600000 } })

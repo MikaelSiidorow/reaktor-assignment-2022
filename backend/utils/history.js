@@ -13,7 +13,7 @@ const sortGames = async () => {
 
     await Game
       .find({})
-      .sort({ "t": 1 })
+      .sort({ 't': 1 })
 
     //get all userIds
     const userIds = await User.find({}, { _id: 1 })
@@ -185,7 +185,7 @@ const getAll = async (cursor = '/rps/history') => {
       }
     }
     else if (cursor !== '/rps/history' && !(await Cursor.findById(cursor))) {
-      cursorToSave = new Cursor({ _id: cursor })
+      const cursorToSave = new Cursor({ _id: cursor })
       for (let [index, game] of response.data.data.entries()) {
         await saveData(game, index, total)
       }

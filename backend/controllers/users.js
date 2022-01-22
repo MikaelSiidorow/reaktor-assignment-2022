@@ -20,7 +20,7 @@ usersRouter.get('/:id/games', async (request, response) => {
   const page = parseInt(request.query.page)
   const totalGames = (await User.findById(request.params.id)).games.length
   const pages = Math.ceil(totalGames / 20) - 1
-  const firstPageCount = totalGames % 20 == 0 ? 20 : totalGames % 20
+  const firstPageCount = totalGames % 20 === 0 ? 20 : totalGames % 20
 
   if (!page) {
     const games = (await User
