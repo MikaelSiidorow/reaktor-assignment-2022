@@ -20,6 +20,7 @@ const App = () => {
 
   const dispatch = useDispatch()
 
+  // initialize app state by getting all user names and games in the last 10 mins
   useEffect(() => {
     dispatch(initializeUsers())
     dispatch(initializeGames())

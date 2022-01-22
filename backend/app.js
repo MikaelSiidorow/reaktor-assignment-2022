@@ -27,7 +27,11 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
 app.use(express.static('build'))
 app.use(cors())
 app.use(express.json())
-app.use(middleware.requestLogger)
+
+//only use detailed request logger middleware in test mode
+if (process.env.NODE_ENV === 'test') {
+  app.use(middleware.requestLogger)
+}
 
 app.use('/api/games', gamesRouter)
 app.use('/api/users', usersRouter)

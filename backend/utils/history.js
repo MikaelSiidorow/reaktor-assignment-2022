@@ -44,24 +44,29 @@ const sortGames = async () => {
 const saveData = async (data, index, total) => {
   //all logic breaks if there's an issue in between saving game and users but not like that would ever happen...
   try {
+    //skip games already stored
     if (await Game.findById(data.gameId)) {
       console.log('already saved', index, 'of', total)
     }
+    //save game and update users based on the result
     else {
-      //console.log(data)
+      //create new game based on data
       const game = new Game({
         _id: data.gameId,
         ...data,
         winner: determineWinner(data),
       })
+      //save game
       await game.save()
-      //console.log('game', game)
+
+      //try to find users already stored in db with same name
       const getA = await User.findById(game.playerA.name)
       const getB = await User.findById(game.playerB.name)
-      //console.log('getA before', getA, 'getB before', getB)
+
+      //rare case where player plays against themselves
+      //only update player once
       if (getA && getB && getA._id === getB._id) {
-        //rare case where player plays against themselves
-        //only update player once
+        //player found in db
         getA.totalGames = getA.totalGames + 1
         getA.totalWins = game.winner === game.playerA.name ? getA.totalWins + 1 : getA.totalWins
         getA.handCounts = {
@@ -73,10 +78,10 @@ const saveData = async (data, index, total) => {
           game._id, ...getA.games
         ]
         //update user data
-        //console.log('getA after', getA)
         await getA.save()
       } else if (game.playerA.name === game.playerB.name) {
         // first time seeing this user
+        //create new user with data
         const a = new User({
           _id: game.playerA.name,
           totalGames: 1,
@@ -91,7 +96,6 @@ const saveData = async (data, index, total) => {
           ]
         })
         //save user
-        //console.log('a', a)
         await a.save()
       } else {
         if (getA) {
@@ -107,10 +111,10 @@ const saveData = async (data, index, total) => {
             game._id, ...getA.games
           ]
           //update user data
-          //console.log('getA after', getA)
           await getA.save()
         } else {
           // first time seeing this user
+          //create new user with data
           const a = new User({
             _id: game.playerA.name,
             totalGames: 1,
@@ -125,7 +129,6 @@ const saveData = async (data, index, total) => {
             ]
           })
           //save user
-          //console.log('a', a)
           await a.save()
         }
         if (getB) {
@@ -141,10 +144,10 @@ const saveData = async (data, index, total) => {
             game._id, ...getB.games
           ]
           //update user data
-          //console.log('getB after', getB)
           await getB.save()
         } else {
           // first time seeing this user
+          // create new user with data
           const b = new User({
             _id: game.playerB.name,
             totalGames: 1,
@@ -159,7 +162,6 @@ const saveData = async (data, index, total) => {
             ]
           })
           //save user
-          //console.log('b', b)
           await b.save()
         }
       }
@@ -174,25 +176,30 @@ const getAll = async (cursor = '/rps/history') => {
     const response = await axios.get(baseUrl + cursor)
     const total = response.data.data.length
     logger.info('getting url:', cursor, 'with', total, 'entries')
+    // on last page sort games in database and restart API traversal from start
     if (response.data.data.cursor === null || total < 1) {
       logger.info('reached the end of the api, sorting games by time and restarting')
       await sortGames()
       getAll()
     }
+    // always scan first page
     if (cursor === '/rps/history') {
       for (let [index, game] of response.data.data.entries()) {
         await saveData(game, index, total)
       }
     }
+    // if cursor is found already scanned page is skipped
     else if (cursor !== '/rps/history' && !(await Cursor.findById(cursor))) {
       const cursorToSave = new Cursor({ _id: cursor })
       for (let [index, game] of response.data.data.entries()) {
         await saveData(game, index, total)
       }
+      // save cursor to db after fully scanning the page
       await cursorToSave.save()
     } else {
       console.log('already fetched page data: skipping...')
     }
+    // scan next cursor
     getAll(response.data.cursor)
   } catch (error) {
     logger.error(error)
