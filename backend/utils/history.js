@@ -195,7 +195,7 @@ const getAll = async (cursor = '/rps/history') => {
         await saveData(game, index, total)
       }
       // save cursor to db after fully scanning the page
-      await cursorToSave.save()
+      try {await cursorToSave.save()} catch (err) { logger.error(err) }
     } else {
       console.log('already fetched page data: skipping...')
     }
