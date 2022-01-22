@@ -41,11 +41,11 @@ const sortGames = async () => {
   }
 }
 
-const saveData = async (data) => {
+const saveData = async (data, index, total) => {
   //all logic breaks if there's an issue in between saving game and users but not like that would ever happen...
   try {
     if (await Game.findById(data.gameId)) {
-      console.log('already saved')
+      console.log('already saved', index, 'of', total)
     }
     else {
       //console.log(data)
@@ -171,22 +171,23 @@ const saveData = async (data) => {
 
 const getAll = async (cursor = '/rps/history') => {
   try {
-    logger.info('getting url:', baseUrl + cursor)
     const response = await axios.get(baseUrl + cursor)
-    if (response.data.data.cursor === null || response.data.data.length < 1) {
+    const total = response.data.data.length
+    logger.info('getting url:', cursor, 'with', total, 'entries')
+    if (response.data.data.cursor === null || total < 1) {
       logger.info('reached the end of the api, sorting games by time and restarting')
       await sortGames()
       getAll()
     }
     if (cursor === '/rps/history') {
-      for (const game of response.data.data) {
-        await saveData(game)
+      for (let [index, game] of response.data.data.entries()) {
+        await saveData(game, index, total)
       }
     }
     else if (cursor !== '/rps/history' && !(await Cursor.findById(cursor))) {
       cursorToSave = new Cursor({ _id: cursor })
-      for (const game of response.data.data) {
-        await saveData(game)
+      for (let [index, game] of response.data.data.entries()) {
+        await saveData(game, index, total)
       }
       await cursorToSave.save()
     } else {
