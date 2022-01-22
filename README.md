@@ -44,7 +44,7 @@ Node, Express, MongoDB
 *(Luckily this doesn't really have an impact on the end-user since the data is already pre-fetched.)*
 
 
-* Separating backend and frontend logic into their own directories made deployment way too difficult and would make implementing a CI/CD solution to the project tedious. If I remade this app I would use Nextjs or a similar framework for building a fullstack application.
+* Separating backend and frontend logic into their own directories made deployment way too difficult and would make implementing a CI/CD solution to the project tedious. If I remade this app I would use Nextjs or a similar framework for building a fullstack application. Alternatively I could configure my own webpack with React.
 
 * Unit and E2E testing is completely missing. I rushed to get something working out and had little time to add tests. If I continued working on this project I would add integration tests with Cypress and unit tests with Jest.
 
